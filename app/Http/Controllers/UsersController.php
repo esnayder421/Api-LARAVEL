@@ -6,7 +6,6 @@ use App\Models\User;
 use App\Models\Favorites;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use PhpParser\Node\Stmt\TryCatch;
 
 class UsersController extends Controller
 {
@@ -41,7 +40,6 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-
         try {
             
             $user = new User();
@@ -93,13 +91,19 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
         try {
             $favorite = new Favorites();
-            $user = User::findOrFail($id);
-            $values = $request->all();
-            $user->update($values);
-            
+            $user = User::find($id);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            if(!$request->password == ""){
+                $user->password = bcrypt($request->password);
+            }
+            $user->address = $request->address;
+            $user->city = $request->city;
+            $user->birthdate = $request->birthdate;
+            $user->save();
+    
             $favorite->idUser = $id;
             $favorite->refApi = " https://rickandmortyapi.com/api";
             $favorite->save();
