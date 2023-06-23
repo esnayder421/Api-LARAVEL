@@ -46,6 +46,10 @@ class AuthController extends Controller
     {
         return response()->json(auth()->user());
     }
+    public function meIdRol()
+    {
+        return auth()->user()->id_rol;
+    }
 
     /**
      * Log the user out (Invalidate the token).

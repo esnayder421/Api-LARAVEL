@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ProjectsController;
+use App\Http\Controllers\TasksController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+
 // añadimos las rutas 
 Route::group([
 
@@ -34,6 +37,12 @@ Route::group([
     Route::post('me', 'App\Http\Controllers\AuthController@me');
     Route::post('register','App\Http\Controllers\AuthController@register');
     Route::put('register/update/{id}','App\Http\Controllers\AuthController@update');
+    
+    
 }
 );
 Route::resource('users', UsersController::class);
+Route::resource('project', ProjectsController::class);
+Route::resource('task', TasksController::class);
+
+

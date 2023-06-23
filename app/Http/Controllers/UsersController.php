@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Favorites;
 use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Validator;
 
 class UsersController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['store', 'update', 'destroy']]);
+        $this->middleware('auth:api', ['except' => ['store', '', 'destroy']]);
     }
     /**
      * Display a listing of the resource.
@@ -21,6 +21,12 @@ class UsersController extends Controller
     public function index()
     {
         //
+        $users = User::simplePaginate();
+
+        return response()->json([
+            "mensaje" => 'lista',
+            $users
+        ], 200);
     }
 
     /**
@@ -46,8 +52,13 @@ class UsersController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->password = bcrypt($request->password);
+            if($request->id_rol){
+                $user->id_rol = $request->id_rol;
+            }else{
+                $user->id_rol = 2;
+            }
+            
             $user->save();
-
         return response()->json([
             "mensaje" => 'Se guardo correctamente',
             $user
@@ -91,27 +102,28 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
+        
         try {
-            $favorite = new Favorites();
+            $profile = new AuthController();
+            $validation = $profile->meIdRol();
+            // return $validation;
+            if($validation == 1){
             $user = User::find($id);
             $user->name = $request->name;
             $user->email = $request->email;
-            if(!$request->password == ""){
-                $user->password = bcrypt($request->password);
-            }
-            $user->address = $request->address;
-            $user->city = $request->city;
-            $user->birthdate = $request->birthdate;
+            $user->password = bcrypt($request->password);
+            $user->id_rol = $request->id_rol;
             $user->save();
-    
-            $favorite->idUser = $id;
-            $favorite->refApi = " https://rickandmortyapi.com/api";
-            $favorite->save();
 
+        return response()->json([
+            "mensaje" => 'Se actualizo correctamente',
+            $user
+        ], 200);
+        }else{
             return response()->json([
-                "mensaje" => 'Se actualizo correctamente',
-                $user
-            ], 201);   
+                "mensaje" => 'Usted no tiene permisos'
+            ], 403);
+        }
         } catch (\Throwable $th) {
             return response()->json([
                 "Error" => 'Inernal Error Server',

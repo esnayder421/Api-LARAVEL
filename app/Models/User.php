@@ -21,10 +21,8 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-        'address',
-        'city',
-        'birthdate',
     ];
+    public $foreignkey = "id_rol";
 
     /**
      * The attributes that should be hidden for arrays.
